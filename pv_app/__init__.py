@@ -1,5 +1,6 @@
 '''
    Privacy Veil: Privacy guarantees research on Large Language Models
+   Initialization module
 '''
 import os
 from flask import Flask
@@ -21,7 +22,7 @@ def pv_init_app(app_name, test_config):
         # Otherwise load the test config 
         app.config.from_mapping(test_config)
 
-    app.config.from_prefixed_env()
+    app.config.from_prefixed_env(prefix='PV')
     try:
         os.makedirs(app.instance_path)
     except OSError:

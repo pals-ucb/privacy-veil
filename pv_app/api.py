@@ -4,8 +4,8 @@
 '''
 import functools
 from flask import Blueprint, g, request, session, url_for
-from pvapp.model import get_model
-from pvapp.model_loader import alpaca_query_single
+from pv_app.model import get_model
+from pv_app.model_loader import alpaca_query_single
 
 bp = Blueprint('apis', __name__, url_prefix='/privacy-veil/api')
 
@@ -21,5 +21,6 @@ def pv_alpaca_query_single():
     data = request.get_json()
     print(f'alapac-query-single: {data}')
     response = alpaca_query_single(data['input'], model, tokenizer)
-    return 'Privacy Veil: Hello, World!\n'
+    print(f'returning query response: {response}')
+    return response
 

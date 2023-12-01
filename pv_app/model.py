@@ -1,5 +1,6 @@
 '''
-   Privacy Veil: Model loader interface
+   Privacy Veil: Privacy guarantees research on Large Language Models
+   Model loader interface
 '''
 import click
 from . import model_loader
