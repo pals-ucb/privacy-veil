@@ -31,7 +31,7 @@ def alpaca_query_single(input_str, model, tokenizer):
     with torch.no_grad():
         inputs = {k: v.to(device) for k, v in tokens.items()}
         outputs = model.generate(
-            input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"]
+            input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], max_new_tokens=1024
         )
     result = tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True)
     return result
