@@ -31,4 +31,3 @@ transformers==4.35.2
 typing_extensions==4.8.0
 urllib3==2.1.0
 Werkzeug==3.0.1
-```
