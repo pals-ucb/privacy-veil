@@ -24,9 +24,23 @@ def unload_model(model_name):
     #print(f'Unloading model: {model_name}')
     pass
 
-def alpaca_query_single(input_str, model, tokenizer):
+def clean_response(input_str, response):
+    # I think this may not be good to clean
+    # the response.
+    # Let us experiment a bit more and then see.
+    '''
+    ret = []
+    for resp in response:
+        if len(resp) > len(input_str):
+            resp = resp[len(input_str)+1:]
+        resp = resp.replace('\\n', '\n')
+        ret.append(resp)
+    return ret
+    '''
+    return response
+
+def alpaca_query(input_str, model, tokenizer):
     device = current_app.config['DEVICE']
-    print(f'Making alpaca query with the given input_str: {input_str}')
     tokens = tokenizer(input_str, return_tensors="pt")
     with torch.no_grad():
         inputs = {k: v.to(device) for k, v in tokens.items()}
@@ -34,5 +48,36 @@ def alpaca_query_single(input_str, model, tokenizer):
             input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], max_new_tokens=1024
         )
     result = tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True)
-    return result
+    return clean_response(input_str, result)
+
+def alpaca_query_with_genconfig(input_str, genconfig, model, tokenizer):
+    device = current_app.config['DEVICE']
+    tokens = tokenizer(input_str, return_tensors="pt")
+    with torch.no_grad():
+        inputs = {k: v.to(device) for k, v in tokens.items()}
+        outputs = model.generate(
+            input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], **genconfig
+        )
+    result = tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True)
+    return clean_response(input_str, result)
+
+def alpaca_query_fast(input_str, model, tokenizer):
+    device = current_app.config['DEVICE']
+    tokens = tokenizer(input_str, return_tensors="pt")
+    with torch.no_grad():
+        inputs = {k: v.to(device) for k, v in tokens.items()}
+        outputs = model.generate(
+            input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], 
+            min_new_tokens=10,
+            max_new_tokens=80,  
+            max_time = 5,
+            do_sample = True,
+            temperature = 0.5,
+            top_k = 3,
+            repetition_penalty = 2.0
+        )
+    result = tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True)
+    print(result)
+    print(type(result))
+    return clean_response(input_str, result)
 
