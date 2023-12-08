@@ -11,7 +11,7 @@ from flask import current_app
 def load_model(model_name):
     device = current_app.config['DEVICE']
     print(f'Starting to load the model {model_name}')
-    model = AutoPeftModelForCausalLM.from_pretrained(model_name)
+    model = AutoPeftModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, low_cpu_mem_usage=True)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.bos_token_id = 1
     tokenizer.stop_token_ids = [0]
