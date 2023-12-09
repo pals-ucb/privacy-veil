@@ -2,6 +2,7 @@
    Privacy Veil: Privacy guarantees research on Large Language Models
    APIs
 '''
+import json
 import functools
 from flask import Blueprint, g, request, session, url_for
 from pv_app.model import get_model
@@ -40,7 +41,8 @@ def pv_alpaca_query_with_genconfig():
     (model, tokenizer) = get_model()
     data = request.get_json()
     print(f'alapac-query-with-genconfig: {data}')
-    response = alpaca_query_with_genconfig(data['input'], data['genconfig'], model, tokenizer)
+    gc = json.loads(data['genconfig'])
+    response = alpaca_query_with_genconfig(data['input'], gc, model, tokenizer)
     print(f'returning query response: {response}')
     return response
 
